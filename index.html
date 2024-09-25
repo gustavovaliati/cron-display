@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronometer Display</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #131313;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+        }
+
+        #progressBar {
+            left: 1%;
+            width: 98%;
+            height: 70vh;
+            background-color: #131313;
+            border-radius: 20px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 65vmin;
+            /* Countdown number twice as big */
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+        }
+
+        #filler {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+            border-radius: 5px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input[type="number"] {
+            font-size: 20px;
+            padding: 10px;
+            margin: 5px;
+            width: 100px;
+        }
+
+        #timeDisplay {
+            position: absolute;
+            z-index: 1;
+        }
+
+        .blink {
+            animation: blink 0.5s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #currentTime {
+            font-size: 20vh;
+            font-weight: bold;
+            /* Same font size as countdown */
+            color: rgb(240, 240, 240);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="progressBar" class="hidden">
+            <div id="filler"></div>
+            <div id="timeDisplay"></div>
+        </div>
+
+        <div id="currentTime"></div>
+    </div>
+
+    <script>
+        let socket;
+        let started = false;
+        let timeRemaining = 0;
+        let isBlinking = false;
+        let duration = 0;
+        let paused = false;
+        let blinkMap = {
+            "red": false,
+            "orange": false,
+            "blue": false,
+            "yellow": false
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            displayCurrentTime();
+            socket = new WebSocket('ws://localhost:3000');
+            socket.onopen = () => {
+                console.log('WebSocket connection established.');
+                socket.send(JSON.stringify({ type: "countdown-loaded" }));
+            };
+            socket.onmessage = async (data) => {
+                console.log(data.data.text())
+                const event = JSON.parse(await data.data.text());
+                // do something with event
+                console.log(`Received: ${event.type}`);
+                socket.send(JSON.stringify({ type: "report", received: event.type }));
+
+                switch (event.type) {
+                    case "start":
+                        paused = false
+                        if (!started) {
+                            startCountdown(event.seconds);
+                            started = true;
+                            loop()
+
+                            const progressBar = document.getElementById('progressBar');
+                            const filler = document.getElementById('filler');
+                            const timeDisplay = document.getElementById('timeDisplay');
+                            progressBar.style.backgroundColor = '#fcfcfc';
+                            progressBar.classList.remove('hidden');
+                            filler.classList.remove('hidden');
+                            timeDisplay.classList.remove('hidden');
+                        }
+                        break;
+                    case "restart":
+                        if (started) {
+                            paused = false
+                            startCountdown(event.seconds);
+                        }
+                        break;
+                    case "pause":
+                        paused = true
+                        break;
+                    case "continue":
+                        paused = false
+                        break;
+                    case "delete":
+                        started = false
+                        const progressBar = document.getElementById('progressBar');
+                        const filler = document.getElementById('filler');
+                        const timeDisplay = document.getElementById('timeDisplay');
+
+                        progressBar.style.backgroundColor = '#131313';
+                        // filler.style.backgroundColor = "#4caf50";
+                        progressBar.classList.add('hidden');
+                        filler.classList.add('hidden');
+                        timeDisplay.classList.add('hidden');
+
+                        break;
+                    case "ready":
+                        break;
+                    default:
+                        throw new Error(`Unsupported event type: ${event.type}.`);
+                }
+            }
+
+
+        });
+
+        function startCountdown(new_duration) {
+            const progressBar = document.getElementById('progressBar');
+            const filler = document.getElementById('filler');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const currentTimeDisplay = document.getElementById('currentTime');
+
+            filler.style.backgroundColor = "#4caf50";
+            timeRemaining = new_duration;
+            duration = new_duration;
+
+            isBlinking = false;
+            blinkMap = {
+                "red": false,
+                "orange": false,
+                "blue": false,
+                "yellow": false
+            }
+
+            progressBar.classList.remove('hidden');
+
+        }
+
+        function blink(colorBlink) {
+            console.log(colorBlink, blinkMap[colorBlink])
+            if (isBlinking || blinkMap[colorBlink]) {
+                return
+            }
+            blinkMap[colorBlink] = true
+            isBlinking = true
+            let blinkCount = 0;
+            const blinkInterval = setInterval(() => {
+                if (blinkCount < 5) {
+                    filler.classList.toggle('blink');
+                    blinkCount++;
+                } else {
+                    clearInterval(blinkInterval);
+                    filler.classList.remove('blink');
+                    isBlinking = false;
+                }
+            }, 200);
+        }
+
+        function loop() {
+            if (paused || !started) {
+                return
+            }
+            timeRemaining--;
+
+            // Update the filler width
+            const progress = ((duration - timeRemaining) / duration) * 100;
+            filler.style.width = progress + '%';
+            // filler.classList.toggle('hidden')
+
+            // Handle color changes and blinking
+            if (progress >= 99) {
+                filler.style.backgroundColor = 'red';
+                blink("red")
+            } else if (progress >= 90) {
+                filler.style.backgroundColor = '#fd7c03';
+                blink("orange")
+            } else if (progress >= 80) {
+                filler.style.backgroundColor = 'yellow';
+                blink("yellow")
+            } else if (progress >= 50) {
+                filler.style.backgroundColor = '#5af4ff';
+                blink("blue")
+            }
+
+            // Format and update the time remaining inside the bar
+            const absTimeRemaining = Math.abs(timeRemaining);
+            const minutes = Math.floor(absTimeRemaining / 60);
+            const seconds = absTimeRemaining % 60;
+            const sign = timeRemaining < 0 ? '-' : ''
+            const formattedTime = `${sign}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            timeDisplay.textContent = formattedTime;
+
+            socket.send(JSON.stringify({ type: "report", timeRemaining: timeRemaining }));
+        }
+
+        setInterval(() => {
+            loop()
+        }, 1000);
+
+        function displayCurrentTime() {
+            setInterval(() => {
+                const now = new Date();
+                const currentDate = now.toLocaleDateString("pt-BR", {
+                    month: "short",
+                    day: "numeric",
+                })
+                const currentTime = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+                document.getElementById('currentTime').textContent = `${currentTime}H, ${currentDate}`;
+            }, 1000);
+        }
+    </script>
+
+</body>
+
+</html>

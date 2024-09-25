@@ -1,0 +1,49 @@
+{
+  "name": "cron-display",
+  "version": "0.0.0",
+  "main": "main.js",
+  "email": "gustavovaliati@gmail.com",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:all": "electron-builder --linux --win"
+  },
+  "devDependencies": {
+    "electron": "^25.2.0",
+    "electron-builder": "^25.0.5"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.12.0"
+  },
+  "build": {
+    "appId": "br.com.verdade.chronometer",
+    "productName": "ChronometerDisplay",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "public/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility",
+      "icon": "build/icons"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
