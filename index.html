@@ -33,10 +33,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 65vmin;
-            /* Countdown number twice as big */
+            /* font-size: 65vmin; */
+            font-size: clamp(20px, 70vh, 30vw);
             color: rgb(0, 0, 0);
             font-weight: bold;
+            white-space: nowrap;
+            /* Prevents the text from wrapping */
+            overflow: hidden;
+            /* Optionally hide overflowing text */
         }
 
         #filler {
@@ -81,6 +85,10 @@
             /* Same font size as countdown */
             color: rgb(240, 240, 240);
             margin-top: 20px;
+            white-space: nowrap;
+            /* Prevents the text from wrapping */
+            overflow: hidden;
+            /* Optionally hide overflowing text */
         }
     </style>
 </head>
