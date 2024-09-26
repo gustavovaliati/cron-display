@@ -256,7 +256,7 @@
                 console.log("Origin host", host)
                 socket = new WebSocket(`ws://${host}`);
             } else {
-                socket = new WebSocket(`ws://localhost:3000`);
+                socket = new WebSocket(`ws://localhost:8085`);
             }
 
             socket.onopen = function () {

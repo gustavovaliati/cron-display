@@ -120,7 +120,7 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             displayCurrentTime();
-            socket = new WebSocket('ws://localhost:3000');
+            socket = new WebSocket('ws://localhost:8085');
             socket.onopen = () => {
                 console.log('WebSocket connection established.');
                 socket.send(JSON.stringify({ type: "countdown-loaded" }));
