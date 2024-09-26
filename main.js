@@ -19,7 +19,8 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
-        }
+        },
+        icon: path.join(__dirname, 'assets/icons/cron-display.png')
     });
 
     // Carregar a página HTML

@@ -34,14 +34,14 @@
         "nsis",
         "portable"
       ],
-      "icon": "build/icon.ico"
+      "icon": "assets/icons/cron-display.ico"
     },
     "linux": {
       "target": [
         "AppImage"
       ],
       "category": "Utility",
-      "icon": "build/icons"
+      "icon": "assets/icons/cron-display.png"
     },
     "nsis": {
       "oneClick": false,
