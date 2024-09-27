@@ -33,14 +33,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* font-size: 65vmin; */
             font-size: clamp(20px, 70vh, 30vw);
             color: rgb(0, 0, 0);
             font-weight: bold;
             white-space: nowrap;
-            /* Prevents the text from wrapping */
             overflow: hidden;
-            /* Optionally hide overflowing text */
         }
 
         #filler {
@@ -80,15 +77,20 @@
         }
 
         #currentTime {
-            font-size: 20vh;
+            /* font-size: 20vh; */
+            font-size: clamp(20px, 20vh, 30vw);
             font-weight: bold;
-            /* Same font size as countdown */
             color: rgb(240, 240, 240);
-            margin-top: 20px;
+            /* margin-top: 20px; */
             white-space: nowrap;
-            /* Prevents the text from wrapping */
+            /* position: absolute;
+            z-index: 1; */
+            position: relative;
             overflow: hidden;
-            /* Optionally hide overflowing text */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
         }
     </style>
 </head>
@@ -275,7 +277,7 @@
                     day: "numeric",
                 })
                 const currentTime = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-                document.getElementById('currentTime').textContent = `${currentTime}H, ${currentDate}`;
+                document.getElementById('currentTime').textContent = `${currentDate}, ${currentTime}H`;
             }, 1000);
         }
     </script>
