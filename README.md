@@ -1,12 +1,14 @@
 # Chronometer Display
 
-**Chronometer Display** is an desktop application that provides a visual countdown timer that can be controlled remotelly through the local network via a web page.
+**Chronometer Display** is an application that provides a visual countdown timer that can be controlled remotely. The app was created to aid speakers in keeping track of time when doing public speeches.
+
+Technically, it is a multi-platform desktop application controlled through another web page in a local network.
 
 ## Getting started
 
 ### Download
 
-Access [Github's releage page](https://github.com/gustavovaliati/cron-display/releases), download the latest version according to your Operating System target:
+Access [Github's release page](https://github.com/gustavovaliati/cron-display/releases), and download the latest version according to your Operating System target:
 * For Windows, download the `.exe`.
 * For Linux, download the `.AppImage`.
 * For Mac: TODO;
@@ -17,17 +19,24 @@ The app requires no installation, just double-click the executable you downloade
 
 ### Using it
 
-Open the ChronometerDisplay app. You should see an blank dark page with clock displaying on the botton.
+1. Open the Chronometer Display:
+
+Open the ChronometerDisplay app. You should see a blank dark page with a clock displayed on the bottom.
+On the desktop app, you should see the timer displaying as you set time and commands on the controller app. Use the menus to see extra functions, like Window > Full Screen.
 
 <pic>
 
-On the menu, click Open > Controller. It will open a Web Page with the Controller app. You should see `Ready` on the bottom if the application is working.
+2. Open the Remote Controller:
 
-Click on the minutes and second buttons to set up a timer defined in the grey, then click `Start`. The other control buttols are intuitive.
+On the menu, click `Open > Controller`. It will open a Web Page with the Controller app. You should see `Ready` on the bottom if the application works.
 
-If the Controller page get's stopped by the browser, you will see disconnection issue on the screen: just refresh the page to solve it.
+Click on the Minutes and Seconds buttons to set up a timer defined in the grey, then click `Start`. The other control buttons are intuitive.
 
-On the desktop app, you should see the timer displaying as you set time and commands on the controller app. Use the menus to see extra functions, like Window > Full Screen.
+To control the timer from another device, copy the web app address which should be `http://localhost:8085/control.html` and replace `localhost` with the IP Address of the machine where the `Chronometer Display` is being executed.
+
+#### Troubleshooting
+
+* If the Controller page get's stopped by the browser, you will see disconnection issue on the screen: just refresh the page to solve it.
 
 ## Features
 
@@ -41,6 +50,8 @@ On the desktop app, you should see the timer displaying as you set time and comm
    2. Responsive UI;
 2. Remote Controller:
    1. Accessible via any Web Browser in any device connected to the local network;
+   2. Shows the remaining time in the bottom of the screen, so one doesn't need to keep looking at the displaying monitor;
+   3. Allows multiple simultaneous connected users;
 3. Multi-platform.
 
 ## Development & Collaboration
