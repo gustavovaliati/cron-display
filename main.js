@@ -91,8 +91,6 @@ function createWindow() {
     Menu.setApplicationMenu(menu); // Apply the custom menu to the app
 
 
-    // Check for updates
-    autoUpdater.checkForUpdatesAndNotify();
 }
 
 // Setup logging for auto-updates
@@ -132,6 +130,37 @@ httpServer.listen(8085, () => {
 
 app.whenReady().then(() => {
     createWindow();
+
+    // Check for updates and notify the user
+    autoUpdater.checkForUpdatesAndNotify();
+
+    // Show update events
+    autoUpdater.on('update-available', () => {
+        dialog.showMessageBox({
+            type: 'info',
+            title: 'Update available',
+            message: 'A new update is available. Downloading now...'
+        });
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+        dialog.showMessageBox({
+            type: 'info',
+            title: 'Update Ready',
+            message: 'A new update is ready. Restart the application to apply the update.'
+        }).then(() => {
+            autoUpdater.quitAndInstall();  // Automatically quit and install the update
+        });
+    });
+
+    autoUpdater.on('error', (error) => {
+        log.error('Error in auto-updater:', error);
+        dialog.showMessageBox({
+            type: 'error',
+            title: 'Update Error',
+            message: 'There was a problem with the update process. ' + error
+        });
+    });
 });
 
 app.on('window-all-closed', () => {

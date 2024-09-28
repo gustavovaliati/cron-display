@@ -26,8 +26,16 @@
     },
     "files": [
       "main.js",
+      "preload.js",
       "index.html",
       "public/**/*"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "gustavovaliati",
+        "repo": "cron-display"
+      }
     ],
     "win": {
       "target": [
