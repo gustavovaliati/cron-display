@@ -3,6 +3,7 @@
 **Chronometer Display** is an application that provides a visual countdown timer that can be controlled remotely. The app was created to aid speakers in keeping track of time when doing public speeches.
 
 Technically, it is a multi-platform desktop application controlled through another web page in a local network.
+![2024-09-28_17-29](https://github.com/user-attachments/assets/376e5e41-17bf-4ae6-8723-81d375fab0f5)
 
 ## Getting started
 
@@ -24,7 +25,7 @@ The app requires no installation, just double-click the executable you downloade
 Open the ChronometerDisplay app. You should see a blank dark page with a clock displayed on the bottom.
 On the desktop app, you should see the timer displaying as you set time and commands on the controller app. Use the menus to see extra functions, like Window > Full Screen.
 
-<pic>
+![2024-09-28_17-18_1](https://github.com/user-attachments/assets/c202e237-89ba-41f4-951f-344363bee5ee)
 
 2. Open the Remote Controller:
 
@@ -33,6 +34,8 @@ On the menu, click `Open > Controller`. It will open a Web Page with the Control
 Click on the Minutes and Seconds buttons to set up a timer defined in the grey, then click `Start`. The other control buttons are intuitive.
 
 To control the timer from another device, copy the web app address which should be `http://localhost:8085/control.html` and replace `localhost` with the IP Address of the machine where the `Chronometer Display` is being executed.
+![2024-09-28_17-40_1](https://github.com/user-attachments/assets/083bec7b-8098-416f-ab1d-aba21db64bd7)
+
 
 #### Troubleshooting
 
@@ -84,21 +87,19 @@ To control the timer from another device, copy the web app address which should 
 
 ### Building for Production
 
-Building requires .
-
 You can build the project for Windows and Linux using Electron Builder. To do this, make sure Docker available in the machine, and then run:
 
-    ```bash
+```bash
     docker run --rm -ti \
 		-v ${PWD}:/project \
 		-v ${PWD}/dist:/project/dist \
 		electronuserland/builder:wine \
 		/bin/bash -c "npm install && npm run build:all"
-    ```
+```
 Or 
-    ```bash
+```bash
     make build-all
-    ```
+```
 
 
 This will generate executable files for both Windows and Linux in the dist folder.
