@@ -28,6 +28,14 @@ function createWindow() {
         }
     });
 
+    mainWindow.on('enter-full-screen', () => {
+        mainWindow.setMenuBarVisibility(false);  // Hide menu bar when entering fullscreen
+    });
+
+    mainWindow.on('leave-full-screen', () => {
+        mainWindow.setMenuBarVisibility(true);   // Restore menu bar when exiting fullscreen
+    });
+
     const menu = Menu.buildFromTemplate([
         {
             label: 'Open',
