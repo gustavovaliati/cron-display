@@ -14,8 +14,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            margin-top: 5px;
         }
 
         #panel {
@@ -27,12 +26,16 @@
             width: 100%;
         }
 
-        #currentTime {
-            background-color: #000000;
+        #userMessageBox {
+            background-color: #ffffff;
             text-align: center;
-            color: #ffffff;
+            color: #131313;
             padding: 10px;
             font-size: 5vmax;
+            border-color: "black";
+            border-width: 2px;
+            border-style: "solid";
+            border-radius: 5px;
         }
 
         h1 {
@@ -125,22 +128,15 @@
             text-align: center;
             margin: 5px;
         }
-
-        @media (max-width: 500px) {
-            body {
-                padding: 20px;
-            }
-
-            #panel {
-                padding: 15px;
-            }
-        }
     </style>
 </head>
 
 <body>
     <div id="panel">
         <div id="setup" style="display: none;">
+            <div>
+                <div id="userMessageBox">Ready</div>
+            </div>
             <!-- Buttons for setting minutes -->
             <div>Set minutes:</div>
             <div class=" button-container">
@@ -154,7 +150,6 @@
                 <button onclick="setMinutes(30)">30</button>
                 <button onclick="setMinutes(40)">40</button>
                 <button onclick="setMinutes(50)">50</button>
-
             </div>
             <div>Set seconds:</div>
             <div class="button-container">
@@ -195,10 +190,7 @@
                 <i class="fas fa-trash"></i> Delete
             </button>
 
-            <div>
-                <label for="currentTime">Timer:</label>
-                <div id="currentTime">Waiting for display</div>
-            </div>
+
         </div>
         <div id="conn-status" style="display: block;">
             Attempting to connect...
@@ -226,24 +218,6 @@
         // Function to set minutes based on button click
         function setSeconds(value) {
             document.getElementById('secondsInput').value = value;
-        }
-
-        // Ensure minutes and seconds default to 0 if left empty
-        function ensureDefaultValues() {
-            const minutesInput = document.getElementById('minutesInput');
-            const secondsInput = document.getElementById('secondsInput');
-
-            minutesInput.addEventListener('blur', function () {
-                if (minutesInput.value === '') {
-                    minutesInput.value = '0';
-                }
-            });
-
-            secondsInput.addEventListener('blur', function () {
-                if (secondsInput.value === '') {
-                    secondsInput.value = '0';
-                }
-            });
         }
 
         function connect() {
@@ -274,37 +248,41 @@
             };
 
             socket.onmessage = async (data) => {
-                console.log(data.data.text())
                 const event = JSON.parse(await data.data.text());
-                console.log(`Received: ${data}`);
 
                 switch (event.type) {
                     case "report":
                         if (event.received) {
-                            document.getElementById('currentTime').textContent = event.received
+                            console.log("received", event.received)
+                            switch (event.received) {
+                                case "delete":
+                                    setUserMessage("Ready", "white")
+                                default:
+                                    return
+                            }
                         } else {
 
                             const absTimeRemaining = Math.abs(event.timeRemaining);
                             const minutes = Math.floor(absTimeRemaining / 60);
                             const seconds = absTimeRemaining % 60;
                             const sign = event.timeRemaining < 0 ? '-' : ''
-                            document.getElementById('currentTime').textContent = `${sign}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                            if (event.timeRemaining <= 0) {
-                                document.getElementById('currentTime').style.backgroundColor = 'red';
-                            } else {
-                                document.getElementById('currentTime').style.backgroundColor = 'black';
-                            }
+                            let currentTime = `${sign}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                            setUserMessage(currentTime, event.color)
                         }
                         break;
                     case "countdown-loaded":
-                        document.getElementById('currentTime').textContent = `loaded`;
-                        document.getElementById('currentTime').style.backgroundColor = 'black';
+                        setUserMessage("loaded", "grey")
                         break;
                     default:
                         filler.style.backgroundColor = 'black';
-                        document.getElementById('currentTime').textContent = "default";
+                        setUserMessage("", "white")
                 }
             }
+        }
+
+        function setUserMessage(text, color) {
+            document.getElementById('userMessageBox').textContent = text;
+            document.getElementById('userMessageBox').style.backgroundColor = color;
         }
 
 
@@ -323,6 +301,9 @@
             const minutes = parseInt(document.getElementById('minutesInput').value, 10);
             const seconds = parseInt(document.getElementById('secondsInput').value, 10);
             const totalSeconds = (minutes * 60) + seconds;
+            if (totalSeconds < 5) {
+
+            }
             const event = { type: type, seconds: totalSeconds };
             socket.send(JSON.stringify(event));
         };
@@ -347,8 +328,6 @@
             socket.send(JSON.stringify({ type: "delete" }));
         });
 
-        // Initialize default value check for minutes and seconds
-        ensureDefaultValues();
     </script>
 </body>
 
