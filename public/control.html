@@ -18,7 +18,7 @@
             margin: 0;
         }
 
-        #setup {
+        #panel {
             background-color: #fcfcfc;
             padding: 20px;
             border-radius: 10px;
@@ -106,10 +106,6 @@
             margin: 0 10px;
         }
 
-        .duration-inputs {
-            display: none;
-        }
-
         .button-container {
             display: flex;
             flex-wrap: wrap;
@@ -135,7 +131,7 @@
                 padding: 20px;
             }
 
-            #setup {
+            #panel {
                 padding: 15px;
             }
         }
@@ -143,81 +139,83 @@
 </head>
 
 <body>
-    <div id="setup">
-        <!-- Buttons for setting minutes -->
-        <div>Set minutes:</div>
-        <div class="button-container">
-            <button onclick="setMinutes(0)">0</button>
-            <button onclick="setMinutes(1)">1</button>
-            <button onclick="setMinutes(2)">2</button>
-            <button onclick="setMinutes(3)">3</button>
-            <button onclick="setMinutes(5)">5</button>
-            <button onclick="setMinutes(10)">10</button>
-            <button onclick="setMinutes(20)">20</button>
-            <button onclick="setMinutes(30)">30</button>
-            <button onclick="setMinutes(40)">40</button>
-            <button onclick="setMinutes(50)">50</button>
+    <div id="panel">
+        <div id="setup" style="display: none;">
+            <!-- Buttons for setting minutes -->
+            <div>Set minutes:</div>
+            <div class=" button-container">
+                <button onclick="setMinutes(0)">0</button>
+                <button onclick="setMinutes(1)">1</button>
+                <button onclick="setMinutes(2)">2</button>
+                <button onclick="setMinutes(3)">3</button>
+                <button onclick="setMinutes(5)">5</button>
+                <button onclick="setMinutes(10)">10</button>
+                <button onclick="setMinutes(20)">20</button>
+                <button onclick="setMinutes(30)">30</button>
+                <button onclick="setMinutes(40)">40</button>
+                <button onclick="setMinutes(50)">50</button>
 
-        </div>
-        <div>Set seconds:</div>
-        <div class="button-container">
-            <button onclick="setSeconds(0)">0</button>
-            <button onclick="setSeconds(15)">15</button>
-            <button onclick="setSeconds(30)">30</button>
-            <button onclick="setSeconds(45)">45</button>
-        </div>
+            </div>
+            <div>Set seconds:</div>
+            <div class="button-container">
+                <button onclick="setSeconds(0)">0</button>
+                <button onclick="setSeconds(15)">15</button>
+                <button onclick="setSeconds(30)">30</button>
+                <button onclick="setSeconds(45)">45</button>
+            </div>
 
-        <!-- Duration Inputs (Initially Hidden) -->
-        <div class="duration-inputs">
-            <div class="input-row">
-                <div>
-                    <label for="minutesInput">Minutes</label>
-                    <input id="minutesInput" type="number" step="1" value="1" min="0" max="999">
-                </div>
-                <div>
-                    <label for="secondsInput">Seconds</label>
-                    <input id="secondsInput" type="number" step="1" value="0" min="0" max="9999">
+            <!-- Duration Inputs (Initially Hidden) -->
+            <div class="duration-inputs">
+                <div class="input-row">
+                    <div>
+                        <label for="minutesInput">Minutes</label>
+                        <input id="minutesInput" type="number" step="1" value="1" min="0" max="999">
+                    </div>
+                    <div>
+                        <label for="secondsInput">Seconds</label>
+                        <input id="secondsInput" type="number" step="1" value="0" min="0" max="9999">
+                    </div>
                 </div>
             </div>
+
+            <!-- Action Buttons (Initially Hidden) -->
+            <button id="startBtn" class="button-control" style="background-color: #4CAF50;">
+                <i class="fas fa-play"></i> Start
+            </button>
+            <button id="restartBtn" class="button-control" style="background-color: #4CAF50;">
+                <i class="fas fa-redo"></i> Restart
+            </button>
+            <button id="pauseBtn" class="button-control" style="background-color: #4d4d4d;">
+                <i class="fas fa-pause"></i> Pause
+            </button>
+            <button id="continueBtn" class="button-control" style="background-color: #3442c0;">
+                <i class="fas fa-play-circle"></i> Continue
+            </button>
+            <button id="deleteBtn" class="button-control" style=" background-color: #470101;">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+
+            <div>
+                <label for="currentTime">Timer:</label>
+                <div id="currentTime">Waiting for display</div>
+            </div>
         </div>
-
-        <!-- Action Buttons (Initially Hidden) -->
-        <button id="startBtn" class="button-control" style="display: none;background-color: #4CAF50;">
-            <i class="fas fa-play"></i> Start
-        </button>
-        <button id="restartBtn" class="button-control" style="display: none;background-color: #4CAF50;">
-            <i class="fas fa-redo"></i> Restart
-        </button>
-        <button id="pauseBtn" class="button-control" style="display: none;background-color: #4d4d4d;">
-            <i class="fas fa-pause"></i> Pause
-        </button>
-        <button id="continueBtn" class="button-control" style="display: none;background-color: #3442c0;">
-            <i class="fas fa-play-circle"></i> Continue
-        </button>
-        <button id="deleteBtn" class="button-control" style="display: none; background-color: #470101;">
-            <i class="fas fa-trash"></i> Delete
-        </button>
-
-        <div>
-            <label for="currentTime">Timer:</label>
-            <div id="currentTime">Waiting for display</div>
+        <div id="conn-status" style="display: block;">
+            Attempting to connect...
         </div>
 
     </div>
 
+
+
     <script>
         let socket;
+        let attemptReconnectIntervalId;
 
         // Function to show/hide duration inputs and buttons
-        function toggleDurationComponents(shouldShow) {
-            const displayStyle = shouldShow ? 'block' : 'none';
-            document.querySelector('.duration-inputs').style.display = displayStyle;
-            document.querySelector('.button-container').style.display = displayStyle;
-            document.getElementById('startBtn').style.display = displayStyle;
-            document.getElementById('restartBtn').style.display = displayStyle;
-            document.getElementById('pauseBtn').style.display = displayStyle;
-            document.getElementById('continueBtn').style.display = displayStyle;
-            document.getElementById('deleteBtn').style.display = displayStyle;
+        function togglePanel(shouldShow) {
+            document.getElementById('setup').style.display = shouldShow ? 'block' : 'none';
+            document.getElementById('conn-status').style.display = !shouldShow ? 'block' : 'none';
         }
 
         // Function to set minutes based on button click
@@ -248,9 +246,8 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
+        function connect() {
             const origin_protocol = window.location.protocol
-            console.log("Origin protocol", origin_protocol)
             if (["http:", "https:"].includes(origin_protocol)) {
                 const host = window.location.host;
                 console.log("Origin host", host)
@@ -261,7 +258,8 @@
 
             socket.onopen = function () {
                 console.log('Connected to WebSocket server');
-                toggleDurationComponents(true); // Show inputs and buttons
+                clearInterval(attemptReconnectIntervalId)
+                togglePanel(true); // Show inputs and buttons
                 socket.send(JSON.stringify({ type: "ready" }));
             };
 
@@ -271,7 +269,8 @@
 
             socket.onclose = function () {
                 console.log('WebSocket connection closed');
-                toggleDurationComponents(false); // Hide inputs and buttons
+                togglePanel(false); // Hide inputs and buttons
+                attemptReconnect();
             };
 
             socket.onmessage = async (data) => {
@@ -306,6 +305,18 @@
                         document.getElementById('currentTime').textContent = "default";
                 }
             }
+        }
+
+
+        function attemptReconnect() {
+            attemptReconnectIntervalId = setTimeout(function () {
+                console.log('Attempting to reconnect...');
+                connect();
+            }, 1000);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            connect()
         });
 
         const sendEvent = (type) => {
