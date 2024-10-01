@@ -1,4 +1,5 @@
 build-all:
+	rm -rf dist
 	docker run --rm -ti \
 		-v ${PWD}:/project \
 		-v ${PWD}/dist:/project/dist \

@@ -1,6 +1,6 @@
 {
   "name": "cron-display",
-  "version": "0.0.0",
+  "version": "0.0.4",
   "main": "main.js",
   "email": "gustavovaliati@gmail.com",
   "scripts": {

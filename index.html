@@ -169,8 +169,7 @@
                         const filler = document.getElementById('filler');
                         const timeDisplay = document.getElementById('timeDisplay');
 
-                        progressBar.style.backgroundColor = '#131313';
-                        // filler.style.backgroundColor = "#4caf50";
+                        progressBar.style.backgroundColor = 'black';
                         progressBar.classList.add('hidden');
                         filler.classList.add('hidden');
                         timeDisplay.classList.add('hidden');
@@ -237,7 +236,6 @@
             // Update the filler width
             const progress = ((duration - timeRemaining) / duration) * 100;
             filler.style.width = progress + '%';
-            // filler.classList.toggle('hidden')
 
             // Handle color changes and blinking
             if (progress >= 99) {
@@ -262,7 +260,7 @@
             const formattedTime = `${sign}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             timeDisplay.textContent = formattedTime;
 
-            socket.send(JSON.stringify({ type: "report", timeRemaining: timeRemaining }));
+            socket.send(JSON.stringify({ type: "report", timeRemaining: timeRemaining, color: filler.style.backgroundColor }));
         }
 
         setInterval(() => {
