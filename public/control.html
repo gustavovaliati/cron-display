@@ -91,14 +91,16 @@
         /* Styling for the duration and server inputs */
         .input-row {
             display: flex;
-            justify-content: space-between;
+            /* justify-content: space-between; */
             align-items: center;
             margin-bottom: 10px;
-            background-color: #b3b3b3;
+            /* background-color: #b3b3b3; */
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
 
         .input-row input {
-            width: 48%;
             text-align: center;
             font-size: 18px;
             margin: 5px;
@@ -127,6 +129,56 @@
             align-items: center;
             text-align: center;
             margin: 5px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+            width: 48%;
+        }
+
+        .input-with-buttons {
+            width: 100px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            right: -50px;
+            /* Adjust this depending on your layout */
+            height: 100%;
+            /* Make it match the input height */
+        }
+
+        .increment-button,
+        .decrement-button {
+            width: 40px;
+            /* Set the width to match your needs */
+            height: 50%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+
+        .increment-button:hover,
+        .decrement-button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
@@ -161,18 +213,30 @@
 
 
             <!-- Duration Inputs (Initially Hidden) -->
-            <div class="duration-inputs">
-                <div class="input-row">
-                    <div>
-                        <label id="minutesLabel" for="minutesInput">Minutes</label>
+            <div class="input-row">
+                <div class="input-container">
+                    <label id="minutesLabel" for="minutesInput">Minutes</label>
+                    <div class="input-with-buttons">
                         <input id="minutesInput" type="number" step="1" value="1" min="0" max="999">
+                        <div class="button-group">
+                            <button class="increment-button" onclick="incrementMinutes()">+</button>
+                            <button class="decrement-button" onclick="decrementMinutes()">-</button>
+                        </div>
                     </div>
-                    <div>
-                        <label id="secondsLabel" for="secondsInput">Seconds</label>
-                        <input id="secondsInput" type="number" step="1" value="0" min="0" max="9999">
+                </div>
+
+                <div class="input-container">
+                    <label id="secondsLabel" for="secondsInput">Seconds</label>
+                    <div class="input-with-buttons">
+                        <input id="secondsInput" type="number" step="1" value="0" min="0" max="59">
+                        <div class="button-group">
+                            <button class="increment-button" onclick="incrementSeconds()">+</button>
+                            <button class="decrement-button" onclick="decrementSeconds()">-</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
 
             <!-- Action Buttons (Initially Hidden) -->
             <button id="startBtn" class="button-control" style="background-color: #4CAF50;">
@@ -190,8 +254,8 @@
             <button id="deleteBtn" class="button-control" style=" background-color: #470101;">
                 <i class="fas fa-trash"></i> Delete
             </button>
-            <button onclick="setLocale('en')">English</button>
-            <button onclick="setLocale('pt-BR')">Português</button>
+            <!-- <button onclick="setLocale('en')">English</button>
+            <button onclick="setLocale('pt-BR')">Português</button> -->
 
 
         </div>
@@ -225,14 +289,44 @@
             blinkField('secondsInput');
         }
 
-        function blinkField(fieldId) {
+        function blinkField(fieldId, color = "green") {
             const field = document.getElementById(fieldId);
             const originalColor = field.style.backgroundColor;
-            field.style.backgroundColor = 'green';
+            field.style.backgroundColor = color;
 
             setTimeout(() => {
                 field.style.backgroundColor = originalColor || ''; // Revert to original or default color
             }, 1000); // Blinking for 1 second
+        }
+
+        function incrementMinutes() {
+            const minutesInput = document.getElementById('minutesInput');
+            let minutes = parseInt(minutesInput.value, 10);
+            minutesInput.value = minutes + 1;
+        }
+
+        function decrementMinutes() {
+            const minutesInput = document.getElementById('minutesInput');
+            let minutes = parseInt(minutesInput.value, 10);
+            if (minutes > 0) { // Prevent negative values
+                minutesInput.value = minutes - 1;
+            }
+        }
+
+        function incrementSeconds() {
+            const secondsInput = document.getElementById('secondsInput');
+            let seconds = parseInt(secondsInput.value, 10);
+            if (seconds < 59) { // Maximum seconds is 59
+                secondsInput.value = seconds + 1;
+            }
+        }
+
+        function decrementSeconds() {
+            const secondsInput = document.getElementById('secondsInput');
+            let seconds = parseInt(secondsInput.value, 10);
+            if (seconds > 0) { // Prevent negative values
+                secondsInput.value = seconds - 1;
+            }
         }
 
         function connect() {
@@ -316,8 +410,10 @@
             const minutes = parseInt(document.getElementById('minutesInput').value, 10);
             const seconds = parseInt(document.getElementById('secondsInput').value, 10);
             const totalSeconds = (minutes * 60) + seconds;
-            if (totalSeconds < 5) {
-
+            if (totalSeconds < 1) {
+                blinkField('minutesInput', "red");
+                blinkField('secondsInput', "red");
+                return
             }
             const event = { type: type, seconds: totalSeconds };
             socket.send(JSON.stringify(event));
