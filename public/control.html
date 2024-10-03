@@ -138,7 +138,7 @@
                 <div id="userMessageBox">Ready</div>
             </div>
             <!-- Buttons for setting minutes -->
-            <div>Set minutes:</div>
+            <div id="setMinutesLabel">Set minutes:</div>
             <div class=" button-container">
                 <button onclick="setMinutes(0)">0</button>
                 <button onclick="setMinutes(1)">1</button>
@@ -151,7 +151,7 @@
                 <button onclick="setMinutes(40)">40</button>
                 <button onclick="setMinutes(50)">50</button>
             </div>
-            <div>Set seconds:</div>
+            <div id="setSecondsLabel">Set seconds:</div>
             <div class="button-container">
                 <button onclick="setSeconds(0)">0</button>
                 <button onclick="setSeconds(15)">15</button>
@@ -159,15 +159,16 @@
                 <button onclick="setSeconds(45)">45</button>
             </div>
 
+
             <!-- Duration Inputs (Initially Hidden) -->
             <div class="duration-inputs">
                 <div class="input-row">
                     <div>
-                        <label for="minutesInput">Minutes</label>
+                        <label id="minutesLabel" for="minutesInput">Minutes</label>
                         <input id="minutesInput" type="number" step="1" value="1" min="0" max="999">
                     </div>
                     <div>
-                        <label for="secondsInput">Seconds</label>
+                        <label id="secondsLabel" for="secondsInput">Seconds</label>
                         <input id="secondsInput" type="number" step="1" value="0" min="0" max="9999">
                     </div>
                 </div>
@@ -189,6 +190,8 @@
             <button id="deleteBtn" class="button-control" style=" background-color: #470101;">
                 <i class="fas fa-trash"></i> Delete
             </button>
+            <button onclick="setLocale('en')">English</button>
+            <button onclick="setLocale('pt-BR')">Português</button>
 
 
         </div>
@@ -213,11 +216,23 @@
         // Function to set minutes based on button click
         function setMinutes(value) {
             document.getElementById('minutesInput').value = value;
+            blinkField('minutesInput');
         }
 
         // Function to set minutes based on button click
         function setSeconds(value) {
             document.getElementById('secondsInput').value = value;
+            blinkField('secondsInput');
+        }
+
+        function blinkField(fieldId) {
+            const field = document.getElementById(fieldId);
+            const originalColor = field.style.backgroundColor;
+            field.style.backgroundColor = 'green';
+
+            setTimeout(() => {
+                field.style.backgroundColor = originalColor || ''; // Revert to original or default color
+            }, 1000); // Blinking for 1 second
         }
 
         function connect() {
@@ -327,6 +342,52 @@
         document.getElementById('deleteBtn').addEventListener('click', function () {
             socket.send(JSON.stringify({ type: "delete" }));
         });
+
+        const translations = {
+            "en": {
+                "ready": "Ready",
+                "set_minutes": "Set minutes:",
+                "set_seconds": "Set seconds:",
+                "start": "Start",
+                "restart": "Restart",
+                "pause": "Pause",
+                "continue": "Continue",
+                "delete": "Delete",
+                "attempting_to_connect": "Attempting to connect...",
+                "minutes": "Minutes",
+                "seconds": "Seconds"
+            },
+            "pt-BR": {
+                "ready": "Pronto",
+                "set_minutes": "Definir minutos:",
+                "set_seconds": "Definir segundos:",
+                "start": "Iniciar",
+                "restart": "Reiniciar",
+                "pause": "Pausar",
+                "continue": "Continuar",
+                "delete": "Excluir",
+                "attempting_to_connect": "Tentando conectar...",
+                "minutes": "Minutos",
+                "seconds": "Segundos"
+            }
+        };
+
+        let currentLocale = 'en'; // Default to English
+
+        function setLocale(locale) {
+            currentLocale = locale;
+            document.getElementById('userMessageBox').textContent = translations[locale]["ready"];
+            document.getElementById('setMinutesLabel').textContent = translations[locale]["set_minutes"];
+            document.getElementById('setSecondsLabel').textContent = translations[locale]["set_seconds"];
+            document.getElementById('minutesLabel').textContent = translations[locale]["minutes"];
+            document.getElementById('secondsLabel').textContent = translations[locale]["seconds"];
+            document.getElementById('startBtn').innerHTML = `<i class="fas fa-play"></i> ${translations[locale]["start"]}`;
+            document.getElementById('restartBtn').innerHTML = `<i class="fas fa-redo"></i> ${translations[locale]["restart"]}`;
+            document.getElementById('pauseBtn').innerHTML = `<i class="fas fa-pause"></i> ${translations[locale]["pause"]}`;
+            document.getElementById('continueBtn').innerHTML = `<i class="fas fa-play-circle"></i> ${translations[locale]["continue"]}`;
+            document.getElementById('deleteBtn').innerHTML = `<i class="fas fa-trash"></i> ${translations[locale]["delete"]}`;
+            document.getElementById('conn-status').textContent = translations[locale]["attempting_to_connect"];
+        }
 
     </script>
 </body>
