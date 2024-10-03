@@ -137,7 +137,7 @@
         }
 
         .input-with-buttons {
-            width: 100px;
+            width: 50%;
             display: flex;
             align-items: center;
             position: relative;
@@ -468,10 +468,8 @@
             }
         };
 
-        let currentLocale = 'en'; // Default to English
 
         function setLocale(locale) {
-            currentLocale = locale;
             document.getElementById('userMessageBox').textContent = translations[locale]["ready"];
             document.getElementById('setMinutesLabel').textContent = translations[locale]["set_minutes"];
             document.getElementById('setSecondsLabel').textContent = translations[locale]["set_seconds"];
@@ -484,6 +482,8 @@
             document.getElementById('deleteBtn').innerHTML = `<i class="fas fa-trash"></i> ${translations[locale]["delete"]}`;
             document.getElementById('conn-status').textContent = translations[locale]["attempting_to_connect"];
         }
+        const locale = navigator.language || navigator.userLanguage;
+        setLocale(locale)
 
     </script>
 </body>
