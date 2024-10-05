@@ -259,10 +259,10 @@
             <button id="restartBtn" class="button-control" style="background-color: #4CAF50; display: none;">
                 <i class="fas fa-redo"></i> Restart
             </button>
-            <button id="pauseBtn" class="button-control" style="background-color: #4d4d4d;">
+            <button id="pauseBtn" class="button-control" style="background-color: #4d4d4d; display: none">
                 <i class="fas fa-pause"></i> Pause
             </button>
-            <button id="continueBtn" class="button-control" style="background-color: #3442c0;">
+            <button id="continueBtn" class="button-control" style="background-color: #3442c0; display: none;">
                 <i class="fas fa-play-circle"></i> Continue
             </button>
             <button id="deleteBtn" class="button-control" style=" background-color: #470101;">
@@ -445,25 +445,34 @@
             if (ok) {
                 toggleElement("startBtn", false)
                 toggleElement("restartBtn", true)
+                toggleElement("pauseBtn", true)
             }
         });
 
         document.getElementById('restartBtn').addEventListener('click', function () {
             sendEvent("restart");
+            toggleElement("continueBtn", false)
+            toggleElement("pauseBtn", true)
         });
 
         document.getElementById('pauseBtn').addEventListener('click', function () {
             socket.send(JSON.stringify({ type: "pause" }));
+            toggleElement("continueBtn", true)
+            toggleElement("pauseBtn", false)
         });
 
         document.getElementById('continueBtn').addEventListener('click', function () {
             socket.send(JSON.stringify({ type: "continue" }));
+            toggleElement("pauseBtn", true)
+            toggleElement("continueBtn", false)
         });
 
         document.getElementById('deleteBtn').addEventListener('click', function () {
             socket.send(JSON.stringify({ type: "delete" }));
             toggleElement("startBtn", true)
             toggleElement("restartBtn", false)
+            toggleElement("continueBtn", false)
+            toggleElement("pauseBtn", false)
         });
 
         const translations = {
