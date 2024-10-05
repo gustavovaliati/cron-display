@@ -256,7 +256,7 @@
             <button id="startBtn" class="button-control" style="background-color: #4CAF50;">
                 <i class="fas fa-play"></i> Start
             </button>
-            <button id="restartBtn" class="button-control" style="background-color: #4CAF50;">
+            <button id="restartBtn" class="button-control" style="background-color: #4CAF50; display: none;">
                 <i class="fas fa-redo"></i> Restart
             </button>
             <button id="pauseBtn" class="button-control" style="background-color: #4d4d4d;">
@@ -290,6 +290,10 @@
             document.getElementById('setup').style.display = shouldShow ? 'block' : 'none';
             document.getElementById('conn-status').style.display = !shouldShow ? 'block' : 'none';
         }
+        function toggleElement(id, shouldShow) {
+            document.getElementById(id).style.display = shouldShow ? 'block' : 'none';
+        }
+
 
         // Function to set minutes based on button click
         function setMinutes(value) {
@@ -391,6 +395,8 @@
                             const sign = event.timeRemaining < 0 ? '-' : ''
                             let currentTime = `${sign}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                             setUserMessage(currentTime, event.color)
+                            toggleElement("startBtn", false)
+                            toggleElement("restartBtn", true)
                         }
                         break;
                     case "countdown-loaded":
@@ -427,14 +433,19 @@
             if (totalSeconds < 1) {
                 blinkField('minutesInput', "red");
                 blinkField('secondsInput', "red");
-                return
+                return false
             }
             const event = { type: type, seconds: totalSeconds };
             socket.send(JSON.stringify(event));
+            return true
         };
 
         document.getElementById('startBtn').addEventListener('click', function () {
-            sendEvent("start");
+            let ok = sendEvent("start");
+            if (ok) {
+                toggleElement("startBtn", false)
+                toggleElement("restartBtn", true)
+            }
         });
 
         document.getElementById('restartBtn').addEventListener('click', function () {
@@ -451,6 +462,8 @@
 
         document.getElementById('deleteBtn').addEventListener('click', function () {
             socket.send(JSON.stringify({ type: "delete" }));
+            toggleElement("startBtn", true)
+            toggleElement("restartBtn", false)
         });
 
         const translations = {
