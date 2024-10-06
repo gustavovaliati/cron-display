@@ -49,7 +49,6 @@
             color: #555;
         }
 
-        input[type="text"],
         input[type="number"] {
             width: calc(100% - 12px);
             padding: 10px;
@@ -198,6 +197,21 @@
         .decrement-button:hover {
             background-color: #45a049;
         }
+
+        #displayMessageControl {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        #messageInput {
+            width: 100%;
+        }
+
+        #displayMessageButtons {
+            display: flex;
+            gap: 10px;
+        }
     </style>
 </head>
 
@@ -272,6 +286,20 @@
             <button id="deleteBtn" class="button-control" style=" background-color: #470101;">
                 <i class="fas fa-trash"></i> Delete
             </button>
+
+            <div id="displayMessageControl">
+                <div id="displayMessageLabel">Display Message:</div>
+                <input id="messageInput" type="text" maxlength="20" />
+                <div id="displayMessageButtons">
+                    <button id="displayMessageBtn" class="button-control" style="background-color: #3442c0;">
+                        <i class="fas fa-play-circle"></i> Display Message
+                    </button>
+                    <button id="clearMessageBtn" class="button-control" style=" background-color: #470101;">
+                        <i class="fas fa-trash"></i> Clear Message
+                    </button>
+                </div>
+
+            </div>
             <!-- <button onclick="setLocale('en')">English</button>
             <button onclick="setLocale('pt-BR')">Português</button> -->
 
@@ -487,6 +515,16 @@
             toggleElement("continueBtn", false)
             toggleElement("pauseBtn", false)
         });
+        document.getElementById('displayMessageBtn').addEventListener('click', function () {
+            msg = document.getElementById('messageInput').value
+            if (msg) {
+                socket.send(JSON.stringify({ type: "display-message", message: msg }));
+            }
+        });
+        document.getElementById('clearMessageBtn').addEventListener('click', function () {
+            socket.send(JSON.stringify({ type: "clear-message" }));
+        });
+
 
         const translations = {
             "en-US": {
