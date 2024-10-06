@@ -1,7 +1,8 @@
 const { app, BrowserWindow, Menu, shell } = require('electron');
 const log = require('electron-log');
 const path = require('path');
-
+// Enable live reload for all the files inside your project directory
+require('electron-reload')(__dirname);
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');

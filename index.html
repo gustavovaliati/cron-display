@@ -29,7 +29,6 @@
             border-radius: 20px;
             margin-top: 20px;
             position: relative;
-            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -64,6 +63,29 @@
         #timeDisplay {
             position: absolute;
             z-index: 1;
+        }
+
+        #messageOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 9;
+            background-color: rgb(255, 40, 237);
+            /* font-size: clamp(20px, 70vh, 30vw); */
+            font-size: 40vmin;
+            height: 100%;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+            white-space: normal;
+            word-break: break-all;
+            /* line-height: normal; */
+            /* line-height: 100%; */
+            line-height: 0.8;
+            font-family: 'Courier New', 'Courier', 'monospace';
+            overflow: hidden;
         }
 
         .blink {
@@ -101,6 +123,9 @@
         <div id="progressBar" class="hidden">
             <div id="filler"></div>
             <div id="timeDisplay"></div>
+            <div id="messageOverlay" class="hidden">
+                <div id="messageText"></div>
+            </div>
         </div>
 
         <div id="currentTime"></div>
@@ -118,6 +143,22 @@
             "orange": false,
             "blue": false,
             "yellow": false
+        }
+        let displayingMessage = false;
+
+        // function toggleTimer(shouldShow) {
+        //     progressBar.classList.add('hidden');
+        //     filler.classList.add('hidden');
+        //     timeDisplay.classList.add('hidden');
+        // }
+
+        function displayMessage(message) {
+            if (!displayingMessage) {
+                displayingMessage = true
+                document.getElementById('messageText').textContent = message.toUpperCase();
+                document.getElementById('messageOverlay').classList.remove("hidden");
+                setTimeout(() => { document.getElementById('messageOverlay').classList.add("hidden"); displayingMessage = false; }, 3000)
+            }
         }
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -177,6 +218,13 @@
                         break;
                     case "ready":
                         break;
+                    case "display-message":
+                        displayMessage(event.message)
+                        break
+                    case "clear-message":
+                        document.getElementById('messageOverlay').classList.add("hidden");
+                        displayingMessage = false;
+                        break
                     default:
                         throw new Error(`Unsupported event type: ${event.type}.`);
                 }
